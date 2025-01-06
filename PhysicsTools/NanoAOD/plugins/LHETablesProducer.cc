@@ -66,10 +66,17 @@ public:
     std::vector<int> vals_pid;
     std::vector<int> vals_status;
     std::vector<int> vals_spin;
+    std::vector<int> vals_firstMotherIdx;
+    std::vector<int> vals_lastMotherIdx;
     alphaS = hepeup.AQCDUP;
     for (unsigned int i = 0, n = pup.size(); i < n; ++i) {
       int status = hepeup.ISTUP[i];
       int idabs = std::abs(hepeup.IDUP[i]);
+      //NP: I cut this from the first "if" statment below so that it was a global quantity in this loop. I want mothers traced for intermediate particles, too.
+      int mothIdx = std::max(
+          hepeup.MOTHUP[i].first - 1,
+          0);  //first and last mother as pair; first entry has index 1 in LHE; incoming particles return motherindex 0
+      int mothIdxTwo = std::max(hepeup.MOTHUP[i].second - 1, 0);
       if (status == 1 || status == -1 || (status == 2 && (idabs >= 23 && idabs <= 25))) {
         TLorentzVector p4(pup[i][0], pup[i][1], pup[i][2], pup[i][3]);  // x,y,z,t
         vals_pid.push_back(hepeup.IDUP[i]);
@@ -81,12 +88,16 @@ public:
           vals_phi.push_back(0);
           vals_mass.push_back(0);
           vals_pz.push_back(p4.Pz());
+          vals_firstMotherIdx.push_back(-1);  //NP: -1 means no mothers. These are the incoming particles.
+          vals_lastMotherIdx.push_back(-1);
         } else {
           vals_pt.push_back(p4.Pt());
           vals_eta.push_back(p4.Eta());
           vals_phi.push_back(p4.Phi());
           vals_mass.push_back(p4.M());
           vals_pz.push_back(0);
+          vals_firstMotherIdx.push_back(mothIdx);
+          vals_lastMotherIdx.push_back(mothIdxTwo);
         }
       }
       if ((status == 1) && ((idabs == 21) || (idabs > 0 && idabs < 7))) {  //# gluons and quarks
@@ -103,10 +114,6 @@ public:
         // HT
         double pt = std::hypot(pup[i][0], pup[i][1]);  // first entry is px, second py
         lheHT += pt;
-        int mothIdx = std::max(
-            hepeup.MOTHUP[i].first - 1,
-            0);  //first and last mother as pair; first entry has index 1 in LHE; incoming particles return motherindex 0
-        int mothIdxTwo = std::max(hepeup.MOTHUP[i].second - 1, 0);
         int mothStatus = hepeup.ISTUP[mothIdx];
         int mothStatusTwo = hepeup.ISTUP[mothIdxTwo];
         bool hasIncomingAsMother = mothStatus < 0 || mothStatusTwo < 0;
@@ -153,6 +160,10 @@ public:
     outPart->addColumn<int>("pdgId", vals_pid, "PDG ID of LHE particles");
     outPart->addColumn<int>("status", vals_status, "LHE particle status; -1:incoming, 1:outgoing");
     outPart->addColumn<int>("spin", vals_spin, "Spin of LHE particles");
+    outPart->addColumn<int>(
+        "firstMotherIdx", vals_firstMotherIdx, "Index of this particle's first mother in the LHEPart collection.");
+    outPart->addColumn<int>(
+        "lastMotherIdx", vals_lastMotherIdx, "Index of this particle's last mother in the LHEPart collection.");
 
     return outPart;
   }
