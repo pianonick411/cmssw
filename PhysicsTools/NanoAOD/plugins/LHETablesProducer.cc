@@ -95,13 +95,12 @@ public:
           vals_phi.push_back(p4.Phi());
           vals_mass.push_back(p4.M());
           vals_pz.push_back(0);
-          // if (i == n - 1){
-          //   int MomIdx = hepeup.MOTHUP[i].first - 1;
-          //   int MomPdg = hepeup.IDUP[MomIdx];
-          //   TLorentzVector momP4(pup[MomIdx][0], pup[MomIdx][1],pup[MomIdx][2],pup[MomIdx][3]);
-          //   std::cout << "Mom PDG: " << MomPdg << std::endl;
-          //   std::cout << "Mom Pt: " << momP4.Pt() << std::endl;
-          // }
+          //   if (i == n - 1){
+          //     int MomIdx = hepeup.MOTHUP[i].first - 1;
+          //     int MomPdg = hepeup.IDUP[MomIdx];
+          //     TLorentzVector momP4(pup[MomIdx][0], pup[MomIdx][1],pup[MomIdx][2],pup[MomIdx][3]);
+          //     std::cout << "Mom PDG, Pt: " << MomPdg << " "<< momP4.Pt() << std::endl;
+          //   }
         }
       } else {
         newIdxs[i] = -1;
