@@ -95,6 +95,13 @@ public:
           vals_phi.push_back(p4.Phi());
           vals_mass.push_back(p4.M());
           vals_pz.push_back(0);
+          // if (i == n - 1){
+          //   int MomIdx = hepeup.MOTHUP[i].first - 1;
+          //   int MomPdg = hepeup.IDUP[MomIdx];
+          //   TLorentzVector momP4(pup[MomIdx][0], pup[MomIdx][1],pup[MomIdx][2],pup[MomIdx][3]);
+          //   std::cout << "Mom PDG: " << MomPdg << std::endl;
+          //   std::cout << "Mom Pt: " << momP4.Pt() << std::endl;
+          // }
         }
       } else {
         newIdxs[i] = -1;
@@ -129,19 +136,19 @@ public:
       }
     }
 
-    std::vector<Short_t> vals_firstMotherIdx(nOutPart);
-    std::vector<Short_t> vals_lastMotherIdx(nOutPart);
+    std::vector<Short_t> vals_firstMotherIdx;
+    std::vector<Short_t> vals_lastMotherIdx;
 
     for (unsigned int i = 0, n = newIdxs.size(); i < n; ++i) {
       if (newIdxs[i] == -1) {
         continue;
       } else {
         if (hepeup.ISTUP[i] == -1) {
-          vals_firstMotherIdx[newIdxs[i]] = -1;
-          vals_lastMotherIdx[newIdxs[i]] = -1;
+          vals_firstMotherIdx.push_back(-1);
+          vals_lastMotherIdx.push_back(-1);
         } else {
-          vals_firstMotherIdx[newIdxs[i]] = std::max(hepeup.MOTHUP[i].first - 1, 0);
-          vals_lastMotherIdx[newIdxs[i]] = std::max(hepeup.MOTHUP[i].second - 1, 0);
+          vals_firstMotherIdx.push_back(newIdxs[std::max(hepeup.MOTHUP[i].first - 1, 0)]);
+          vals_lastMotherIdx.push_back(newIdxs[std::max(hepeup.MOTHUP[i].second - 1, 0)]);
         }
       }
     }
